@@ -2,8 +2,12 @@ import React, { useEffect, useState ,useRef } from 'react'
 import { Container, Box, Typography, Autocomplete, TextField, Stack } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs'
-import backgroundImage from "../components/travelPattern2.jpg"
+import backgroundImage from '../static/travelPattern2.jpg'
 
+// All this can be coded in a simpler way using "maxDate" and "minDate" property of mui DatePicker
+
+
+// Disable year because 2099 can also be selected
 
 export default function Initial_Search_Page() {
   const [fromDate, setFromDate] = useState(dayjs(dayjs(new Date()).format("DD/MM/YYYY"),'DD/MM/YYYY'))
@@ -16,10 +20,6 @@ export default function Initial_Search_Page() {
   const setToFunc = async (e) => {
     await setToDate(e)
   }
-
-
-  useEffect(()=>{console.log("Component Rendering")})
-
 
   const disableDateFunc = (datee) => {
     const today = dayjs(dayjs(new Date()).format('DD/MM/YYYY'),'DD/MM/YYYY')
@@ -45,10 +45,19 @@ export default function Initial_Search_Page() {
     return Math.abs(monthDifference) >= 2;
   }
 
+  const disableYearFunc = (yearr) =>{
+    if(yearr.year() === dayjs().year()){
+      return false
+    }
+    if(yearr.year() === dayjs().year()+1)
+    {
+      return false
+    }
+    return true
+  }
 
   useEffect(()=>{
     if(disableDates.includes(toDate.format("DD/MM/YYYY"))){
-      console.log("in useEffect.....inside if/")
       setToDate(dayjs(disableDates.at(-1),'DD/MM/YYYY').add(1,'days'))
     }
   },[fromDate])
@@ -88,10 +97,10 @@ export default function Initial_Search_Page() {
                 />
               )}
             />
-            <DatePicker format='DD/MM/YYYY' sx={{bgcolor:'white'}} defaultValue={dayjs(new Date())} orientation='portrait' label='From' onChange={setFromFunc} disablePast={true} shouldDisableMonth={disableMonthfunc} value={dayjs(fromDate,'DD/MM/YYYY')}/><pre>---</pre>
+            <DatePicker format='DD/MM/YYYY' sx={{bgcolor:'white'}} defaultValue={dayjs(new Date())} orientation='portrait' label='From' onChange={setFromFunc} disablePast={true} shouldDisableMonth={disableMonthfunc} shouldDisableYear={disableYearFunc} value={dayjs(fromDate,'DD/MM/YYYY')}/><pre>---</pre>
 
             <DatePicker format='DD/MM/YYYY' defaultValue={dayjs(new Date()).add(1,'days')} orientation='portrait' label='To' onChange={setToFunc} sx={{bgcolor:'white'}}
-              disablePast={true} shouldDisableDate={disableDateFunc} value={dayjs(toDate,'DD/MM/YYYY')}/>
+              disablePast={true} shouldDisableDate={disableDateFunc} shouldDisableYear={disableYearFunc}value={dayjs(toDate,'DD/MM/YYYY')}/>
           </Stack>
         </Box>
       </Container>
